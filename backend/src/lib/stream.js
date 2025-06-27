@@ -8,6 +8,7 @@ if (!apiKey || !apiSecret) {
   console.error("Stream Api Key or Api Secret is Missing.");
 }
 
+
 const streamClient = StreamChat.getInstance(apiKey, apiSecret);
 
 export const upsertStreamUser = async (userData) => {
@@ -22,5 +23,5 @@ export const upsertStreamUser = async (userData) => {
 
 //Todo: doing it later
 export const generateStreamToken = (userId) => {
-    
+
 }

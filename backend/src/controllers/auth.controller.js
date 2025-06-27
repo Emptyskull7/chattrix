@@ -40,16 +40,15 @@ export async function signup(req, res) {
       profilePic: randomAvatar,
     });
 
-    try{
-        await upsertStreamUser({
+    try {
+      await upsertStreamUser({
         id: newUser._id.toString(),
         name: newUser.fullName,
         image: newUser.profilePic || "",
-    })
-    console.log(`Stream User created for ${newUser.fullName}`)
-    }catch(err){
-        console.log("Error creating Stream User.", err);
-
+      });
+      console.log(`Stream User created for ${newUser.fullName}`);
+    } catch (err) {
+      console.log("Error creating Stream User.", err);
     }
 
     const token = jwt.sign(
@@ -103,13 +102,9 @@ export async function login(req, res) {
       });
     }
 
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "7d",
-      }
-    );
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "7d",
+    });
 
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -119,21 +114,84 @@ export async function login(req, res) {
     });
 
     return res.status(200).json({
-        success:true,
-        user,
-    })
+      success: true,
+      user,
+    });
   } catch (err) {
     console.log("Error in login controller.", err.message);
     res.status(500).json({
-        message:"Internal server error."
-    })
+      message: "Internal server error.",
+    });
   }
 }
 
 export function logout(req, res) {
   res.clearCookie("jwt");
   res.status(200).json({
-    success:true,
-    message:"Logout successful."
-  })
+    success: true,
+    message: "Logout successful.",
+  });
+}
+
+export async function onboard(req, res) {
+  try {
+    const userId = req.user._id;
+    const { fullName, bio, nativeLanguage, learningLanguage, location } =
+      req.body;
+    if (
+      !fullName ||
+      !bio ||
+      !nativeLanguage ||
+      !learningLanguage ||
+      !location
+    ) {
+      return res.status(401).json({
+        message: "All fields are required.",
+        missingFields: [
+          !fullName && "fullName",
+          !bio && "bio",
+          !nativeLanguage && "nativeLanguage",
+          !learningLanguage && "learningLanguage",
+          !location && "location",
+        ].filter(Boolean),
+      });
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        ...req.body,
+        isOnboarded: true,
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User Not Found.",
+      });
+    }
+
+    // Update the user info in stream
+    try{
+        await upsertStreamUser({
+            id: updatedUser._id,
+            name: fullName,
+            image: updatedUser.profilePic || "",
+        })
+        console.log(`Stream user updated after Onboarding for ${updatedUser.fullName}`)
+    }catch(streamErr){
+        console.log("Error updating stream user during onboarding.", streamErr.message);    
+
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.log("Onboarding error.", err);
+    res.status(500).json({
+        message:"Interval Server Error."
+    })
+  }
 }
