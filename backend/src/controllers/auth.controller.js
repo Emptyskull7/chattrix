@@ -55,23 +55,72 @@ export async function signup(req, res) {
     });
 
     res.status(201).json({
-        success:true,
-        user:newUser,
-
-    })
+      success: true,
+      user: newUser,
+    });
   } catch (error) {
-        console.log("Error in signup controller.", error);
-        res.status(500).json({
-            success:false,
-            message:"Interval Server Error"
-        })
+    console.log("Error in signup controller.", error);
+    res.status(500).json({
+      success: false,
+      message: "Interval Server Error",
+    });
   }
 }
 
 export async function login(req, res) {
-  res.send("Login Route");
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(401).json({
+        message: "All fields are Required.",
+      });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        message: "Invalid email or password.",
+      });
+    }
+
+    const isPasswordCorrect = await user.matchPassword(password);
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        message: "Invalid email or password.",
+      });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.cookie("jwt", token, {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: "true", //prevent XSS atttacks
+      sameSite: "strict", //prevent CSRF attacks
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    return res.status(200).json({
+        success:true,
+        user,
+    })
+  } catch (err) {
+    console.log("Error in login controller.", err.message);
+    res.status(500).json({
+        message:"Internal server error."
+    })
+  }
 }
 
 export function logout(req, res) {
-  res.send("Logout Route");
+  res.clearCookie("jwt");
+  res.status(200).json({
+    success:true,
+    message:"Logout successful."
+  })
 }

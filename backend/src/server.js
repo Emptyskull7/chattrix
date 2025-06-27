@@ -11,6 +11,7 @@ const PORT = process.env.PORT
 
 app.use(express.json());
 
+//Mounting the Routes
 app.use("/api/auth", authRoutes);
 
 app.listen(PORT, ()=>{
