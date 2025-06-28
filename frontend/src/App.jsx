@@ -9,9 +9,24 @@ import ChatPage from './pages/ChatPage.jsx'
 import NotificationPage from "./pages/NotificationPage.jsx"
 
 import  {Toaster} from 'react-hot-toast'
+import { useQuery } from "@tanstack/react-query"
+import axios from 'axios'
+import { axiosInstance } from "./lib/axios.js"
 
 
 const App = () => {
+  //axios
+  //react query/ tanstack query
+  const {data, isLoading, error} = useQuery({
+    queryKey:["todos"],
+    queryFn: async ()=>{
+      const res = await axiosInstance.get("/auth/me");
+      return res.data;
+    },
+    retry:false,
+  });
+  console.log(data);
+
   return (
     <div className= "h-screen" data-theme="night">
       <Routes>
