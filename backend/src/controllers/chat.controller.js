@@ -5,7 +5,7 @@ export async function getStreamToken(req,res) {
         const token = generateStreamToken(req.user.id);
         res.status(200).json({token});
     }catch(err){
-        console.log("Error in generateStreamToken Controller.", err.message);
+        console.log("Error in getStreamToken Controller.", err.message);
         res.status(500).json({message:"Interval server error."})
     }
 }
