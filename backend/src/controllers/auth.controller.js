@@ -59,7 +59,7 @@ export async function signup(req, res) {
       }
     );
 
-    res.cookie("jwt_token", token, {
+    res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: "true", //prevent XSS atttacks
       sameSite: "strict", //prevent CSRF attacks
