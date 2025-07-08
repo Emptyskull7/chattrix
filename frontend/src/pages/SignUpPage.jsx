@@ -3,6 +3,7 @@ import { ShipWheelIcon, User } from "lucide-react";
 import {Link} from 'react-router';
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../lib/axios";
+import { signup } from "../lib/api";
 
 const SignUpPage = () => {
   const [signUpData, setSignUpData] = useState({
@@ -13,17 +14,14 @@ const SignUpPage = () => {
 
   const queryClient = useQueryClient();
 
-  const {mutate, isPending, error} = useMutation({
-    mutationFn: async ()=>{
-      const response = await axiosInstance.post("/auth/signup", signUpData);
-      return response.data;
-    }, 
+  const {mutate: signUpMutation, isPending, error} = useMutation({
+    mutationFn: signup, 
     onSuccess:()=> queryClient.invalidateQueries({ queryKey: ["authUser"] }),
   })
 
   const handleSignup = (e) => {
     e.preventDefault();
-    mutate();
+    signUpMutation(signUpData);
     
   };
   return (
@@ -48,6 +46,12 @@ const SignUpPage = () => {
             </span>
           </div>
 
+          {/* Error message if any */}
+          {error && (
+            <div className="alert alert-error">
+              <span>{error.response.data.message}</span>
+            </div>
+          )}
           <div className=" w-full ">
             <form onSubmit={handleSignup}>
               <div className="space-y-4">
@@ -122,8 +126,16 @@ const SignUpPage = () => {
                   </div>
                 </div>
 
+                
+
                 <button className=" btn btn-primary w-full " type="submit">
-                  { isPending ? "Signing up.. " : "Create Account"}
+                  { isPending ?
+                  <>
+                    <span className="btn btn-primary w-full">
+                      Loading...
+                    </span>
+                  </> : 
+                  "Create Account"}
                 </button>
                 <div className=" text-center mt-4 ">
                   <p className="text-sm">
