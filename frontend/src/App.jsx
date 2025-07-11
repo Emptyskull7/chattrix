@@ -15,25 +15,27 @@ import PageLoader from "./components/PageLoader.jsx";
 import { getAuthUser } from "./lib/api.js";
 import useAuthUser from "./hooks/useAuthUser.js";
 import Layout from "./components/Layout.jsx";
+import {useThemeStore} from "./store/useThemeStore.js"
 
 const App = () => {
   //axios
   //react query/ tanstack query
   const { isLoading, authUser } = useAuthUser();
+  const {theme} = useThemeStore();
 
   const isAuthenticated = Boolean(authUser);
   const isOnboarded = authUser?.isOnboarded;
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen text-center">
+      <div className="flex items-center justify-center h-screen">
         <PageLoader />
       </div>
     );
   }
 
   return (
-    <div className="h-screen" data-theme="night">
+    <div className="h-screen" data-theme={theme}>
       <Routes>
         <Route
           path="/"
