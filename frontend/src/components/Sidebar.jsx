@@ -7,9 +7,6 @@ const Sidebar = () => {
     const {authUser} = useAuthUser();
     const location = useLocation();
     const currentPath = location.pathname;
-    
-    console.log("authUser", authUser)
-    console.log("currentPath", currentPath)
 
   return (
     <aside className='w-64 bg-base-200 border-r border-base-300 hidden lg:flex flex-col h-screen sticky top-0'>
@@ -32,7 +29,7 @@ const Sidebar = () => {
             }`}
             >
                 <HomeIcon className='size-5 text-base-content opacity-70'></HomeIcon>
-                <spam>Home</spam>
+                <span>Home</span>
             </Link>
 
             <Link 
@@ -42,7 +39,7 @@ const Sidebar = () => {
             }`}
             >
                 <UserIcon className='size-5 text-base-content opacity-70'></UserIcon>
-                <spam>Friends</spam>
+                <span>Friends</span>
             </Link>
 
             <Link 
@@ -52,7 +49,7 @@ const Sidebar = () => {
             }`}
             >
                 <BellIcon className='size-5 text-base-content opacity-70'></BellIcon>
-                <spam>Notifications</spam>
+                <span>Notifications</span>
             </Link>
         </nav>
 
