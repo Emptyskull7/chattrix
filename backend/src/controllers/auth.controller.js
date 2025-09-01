@@ -17,6 +17,7 @@ export async function signup(req, res) {
       });
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         message: "Invalid email format.",
@@ -63,7 +64,7 @@ export async function signup(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true, //prevent XSS atttacks
       sameSite: "strict", //prevent CSRF attacks
-      secure: process.env.NODE_ENV === "production"
+      secure: process.env.NODE_ENV === "production",
     });
 
     res.status(201).json({
@@ -172,16 +173,20 @@ export async function onboard(req, res) {
     }
 
     // Update the user info in stream
-    try{
-        await upsertStreamUser({
-            id: updatedUser._id,
-            name: fullName,
-            image: updatedUser.profilePic || "",
-        })
-        console.log(`Stream user updated after Onboarding for ${updatedUser.fullName}`)
-    }catch(streamErr){
-        console.log("Error updating stream user during onboarding.", streamErr.message);    
-
+    try {
+      await upsertStreamUser({
+        id: updatedUser._id,
+        name: fullName,
+        image: updatedUser.profilePic || "",
+      });
+      console.log(
+        `Stream user updated after Onboarding for ${updatedUser.fullName}`
+      );
+    } catch (streamErr) {
+      console.log(
+        "Error updating stream user during onboarding.",
+        streamErr.message
+      );
     }
 
     return res.status(200).json({
@@ -191,7 +196,7 @@ export async function onboard(req, res) {
   } catch (err) {
     console.log("Onboarding error.", err);
     res.status(500).json({
-        message:"Interval Server Error."
-    })
+      message: "Interval Server Error.",
+    });
   }
 }
