@@ -16,6 +16,7 @@ import {
 import { StreamChat } from 'stream-chat';
 import ChatLoader from '../components/ChatLoader';
 import CallButton from '../components/CallButton';
+import toast from 'react-hot-toast';
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
@@ -79,7 +80,7 @@ const ChatPage = () => {
     if(channel){
       const callUrl = `${window.location.origin}/call/${channel.id}`;
       channel.sendMessage({
-        text : `I've starteda video call . Join me here: ${callUrl}`
+        text : `I've started a video call . Join me here: ${callUrl}`
       });
       toast.success("Video call link sent successfully!..")
     }
