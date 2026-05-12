@@ -21,13 +21,13 @@ export async function getRecommendedUsers(req, res) {
 }
 
 export async function getMyFriends(req, res) {
-  console.log("Get friend api hitted..")
   try {
     const user = await User.findById(req.user.id)
       .select("friends")
       .populate("friends", "fullName profilePic nativeLanguage learningLanguage");
 
     res.status(200).json(user.friends);
+    console.log("Get friend api hitted..")
   } catch (error) {
     console.error("Error in getMyFriends controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
